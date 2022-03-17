@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			svg{
+				background: #FFC0CB;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+			//动态创建svg标签，添加属性，同时添加入body
+			var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+	        svg.setAttribute("height",'600');
+	        svg.setAttribute("width",'600');
+	        var body=document.getElementsByTagName('body')[0];
+	        body.appendChild(svg);
+
+	        //起点
+	        var begin = []
+	        var begins = []
+	        //终点
+	        var last = []
+	        var lasts = []
+	        //绑定鼠标落下事件，同时创建line标签，添加入svg
+	        svg.onmousedown = function(e){
+			        var line=document.createElementNS('http://www.w3.org/2000/svg','line');
+			        line.style.stroke='black'
+			        svg.appendChild(line);
+			    //绑定鼠标移动事件，给line标签添加属性
+	        	document.onmousemove = function(en){
+	        		//添加起点
+		        	line.setAttribute("x1",e.offsetX);
+		        	line.setAttribute("y1",e.offsetY);
+		        	begin = [e.offsetX,e.offsetY]
+
+		        	//添加终点
+	        		line.setAttribute("x2",en.offsetX);
+	        		line.setAttribute("y2",en.offsetY);
+	        		last = [en.offsetX,en.offsetY]
+	        	}
+	        }
+	        //绑定鼠标抬起时，清除鼠标移动事件
+	       	svg.onmouseup = function(e){
+	       		document.onmousemove = null
+	       		//所有起点
+	       		begins.push(begin)
+//	       		console.log(begins)
+	       		//所有终点
+	       		lasts.push(last)
+//	       		console.log(lasts)
+				//起点和终点交叉组合
+				var points = []
+	       		for(var i = 0 ; i < begins.length; i++){
+	       			//线
+	       			var line = []
+	       			line.push(begins[i],lasts[i])
+	       			points.push(line)
+	       		}
+
+
+       			var line = []
+				line.push(begins[0],lasts[0])
+       			points.push(line)
+				console.log(points)
+
+				//交点
+				var nodes = []
+				for(var i = 0;i<points.length-1;i++){
+					console.log(points[i+1])
+	        		var a={
+						x:Number(points[i][0][0]),
+						y:Number(points[i][0][1])
+					}
+					var b={
+						x:Number(points[i][1][0]),
+						y:Number(points[i][1][1])
+					}
+					var c={
+						x:Number(points[i+1][0][0]),
+						y:Number(points[i+1][0][1])
+					}
+					var d={
+						x:Number(points[i+1][1][0]),
+						y:Number(points[i+1][1][1])
+					}
+//					console.log(a,b,c,d)
+
+					function point(a,b,c,d){
+						var k0 = (b.y-a.y)/(b.x-a.x)
+//						console.log(k0)
+						var e = (b.y - k0*b.x)
+//						console.log(e)
+						var k1 = (d.y-c.y)/(d.x-c.x)
+//						console.log(k1)
+						var e1 = (d.y - k1*d.x)
+//						console.log(e1)
+						var x = (e1-e)/(k0-k1)
+						var y = k0*x + e
+
+						console.log('交点横坐标'+x)
+						console.log('交点纵坐标'+y)
+
+						return {x:(e1-e)/(k0-k1),y:k0*x + e}
+					}
+					point(a,b,c,d)
+					nodes.push(point(a,b,c,d))
+	        	}
+				console.log(nodes)
+				console.log(JSON.stringify(nodes))
+	       	}
+
+		</script>
+	</body>
+</html>
